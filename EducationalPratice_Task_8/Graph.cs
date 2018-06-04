@@ -5,11 +5,13 @@ namespace EducationalPratice_Task_8
 {
     partial class Graph
     {
-        private int _Peaks;
+        private int _peaks;
 
-        private int _Edges;
+        private int _edges;
 
         public List<Edge> Edges = new List<Edge>();
+        private bool[] visited;
+        private List<Int32> adjList;
 
         private bool[,] _encidence;
         /// <summary>
@@ -19,8 +21,8 @@ namespace EducationalPratice_Task_8
         /// <param name="edges">количество ребер</param>
         public Graph(int peaks,int edges)
         {
-            _Peaks = peaks;
-            _Edges = edges;
+            _peaks = peaks;
+            _edges = edges;
         }
         /// <summary>
         /// Найти 2 вершины по столбцу матрицы инцеденции
@@ -39,7 +41,7 @@ namespace EducationalPratice_Task_8
         /// Конвертирование матрицы инциденции в матрицу смежности
         /// </summary>
         /// <param name="matrix">матрица инциденции</param>
-        public void ConvertMatrixToGraph(bool[,] matrix)
+        public bool[,] ConvertMatrixToGraph(bool[,] matrix)
         {
             List<Edge> tempEdge = new List<Edge>();//Временный набор ребер графа для построения матрицы смежности
             bool[,] ctx = new bool[matrix.GetLength(0),matrix.GetLength(0)];//Матрица смежности
@@ -67,6 +69,7 @@ namespace EducationalPratice_Task_8
                 Console.WriteLine(edge.ToString());
 
             ctx.Show();//Вывод матрицы смежности и запись файл
+            return ctx;//Возращаем матрицу смежности
         }
         /// <summary>
         /// Конструктор графа по матрице инцидентности
@@ -74,8 +77,8 @@ namespace EducationalPratice_Task_8
         /// <param name="matrix"></param>
         public Graph(bool[,] matrix)
         {
-            _Peaks = matrix.GetLength(0);
-            _Edges = matrix.GetLength(1);
+            _peaks = matrix.GetLength(0);
+            _edges = matrix.GetLength(1);
             _encidence = matrix;
         }
         /// <summary>
@@ -83,11 +86,56 @@ namespace EducationalPratice_Task_8
         /// </summary>
         public void Check(bool[,] matrix )
         {
-            if (_Edges != _Peaks - 1)
+            if (_edges != _peaks - 1)
                 Console.WriteLine("Граф не является деревом");
             else
             {
             }
+        }
+        /// <summary>
+        /// Поиск в глубину в графе для поиска циклов
+        /// 1- серый цвет
+        /// 0- белый цвет
+        /// 2- черный цвет
+        /// </summary>
+        /// <param name="v"></param>
+        public static void SearchDeep(ref bool[,] tree) // Метод поиска в глубину и высота дерева   
+        {
+            int height1 = 0; int height2 = 0;
+            List<int> nodeDFS = new List<int>();  // создаем пустой список для перечисления вершин обхода в глубину
+            nodeDFS.Add(0); // Добавляем корневую вершину, с которой начинается обход - вершина 0
+            bool[,] assist = (bool[,])tree.Clone(); // копируем матрицу смежности во вспомогательный массив
+            int var = 0;
+            int a, b;
+ 
+            for (a = 0; a < assist.GetLength(0); a++) // !!!здесь идет сбой цикла когда var=b
+            {
+                if (height2 < height1)
+                {
+                    height2 = height1;
+                    height1 = 0;
+                }
+                for (b = a + 1; b < assist.GetLength(1); b++)
+                {
+                    if (assist[a, b])
+                    {
+                        height1++;
+                        nodeDFS.Add(b);
+                        assist[a, b] = false;
+                        break;
+                    }
+
+                }
+            }
+            Console.WriteLine("Выведем список вершин при обходе дерева в глубину:");
+ 
+            for (int i = 0; i < nodeDFS.Count; i++)
+            {
+                Console.WriteLine("\t" + nodeDFS[i]);
+            }
+ 
+            Console.WriteLine("Высота дерева:" + height2);
+            
         }
 
     }

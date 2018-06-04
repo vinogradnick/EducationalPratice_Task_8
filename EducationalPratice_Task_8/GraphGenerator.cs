@@ -77,6 +77,24 @@ namespace EducationalPratice_Task_8
 
                 return matrixTree;
             }
+            public static bool[,] GenerateTree(Graph graph)
+            {
+                List<Edge>Edgelist = GenerateEdgeGraph(true,graph._peaks,graph._edges);
+
+                bool[,] matrixTree = new bool[graph._peaks,graph._edges];
+
+                
+                for (int i = 0; i < matrixTree.GetLength(0); i++)
+                for (int j = 0; j < matrixTree.GetLength(1); j++)
+                    if (Edgelist[j][0] == i || Edgelist[j][1] == i)
+                        matrixTree[i, j] = true;
+                    else
+                        matrixTree[i, j] = false;
+                
+                matrixTree.Show();
+
+                return matrixTree;
+            }
             /// <summary>
             /// Генерация матрицы инцедентности для любого графа
             /// </summary>
@@ -125,15 +143,18 @@ namespace EducationalPratice_Task_8
                 for (int j = 0; j < matrix.GetLength(1); j++)
                 {
                     writer.Write(matrix[i, j] ? "1 " : "0 ");
-                    Console.Write(matrix[i, j] ? "1 " : "0 ");
+                    if(matrix.GetLength(1)<100)
+                        Console.Write(matrix[i, j] ? "1 " : "0 ");
                 }
                 writer.WriteLine();
-               Console.WriteLine();
+                if(matrix.GetLength(1)<100)
+                    Console.WriteLine();
             }
             
             writer.Close();
             writer.Dispose();
         }
+        
     }
 
    
