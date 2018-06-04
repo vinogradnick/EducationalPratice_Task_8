@@ -24,17 +24,13 @@ namespace EducationalPratice_Task_8
             _Edges = edges;
         }
 
-        public Edge Azaza(bool[] azaz)
+        public Edge FindPeak(bool[] edgeMatrix)
         {
-            List<int> add =new List<int>();
-            for (int i = 0; i < azaz.Length; i++)
-            {
-                if (azaz[i])
-                {
-                    add.Add(i);
-                }
-            }
-            return new Edge(add[0],add[1]);
+            List<int> temp =new List<int>();
+            for (int i = 0; i < edgeMatrix.Length; i++)
+                if (edgeMatrix[i])
+                    temp.Add(i);
+            return new Edge(temp[0],temp[1]);
         }
         public void ConvertMatrixToGraph(bool[,] matrix)
         {
@@ -47,10 +43,8 @@ namespace EducationalPratice_Task_8
             {
                 bool[] az = new bool[matrix.GetLength(0)];
                 for (int peaks = 0; peaks < matrix.GetLength(0); peaks++)
-                {
                     az[peaks] = matrix[peaks, eg];
-                }
-                tempEdge.Add(Azaza(az));
+                tempEdge.Add(FindPeak(az));
                 eg++;
             }
 
