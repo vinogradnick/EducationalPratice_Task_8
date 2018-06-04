@@ -15,8 +15,8 @@ namespace EducationalPratice_Task_8
         static void Main(string[] args)
         {
             Graph graph= new Graph(5,4);//Создание графа заданого количества вершин и ребер
-            Graph.GraphGenerator.GenerateTree(20,19);
-            Graph.GraphGenerator.GenerateAnyGraph(5, 4);
+           graph.ConvertMatrixToGraph(Graph.GraphGenerator.GenerateTree(100,99)); 
+          // bool[,] matrix = Graph.GraphGenerator.GenerateAnyGraph(5, 4);
             Console.ReadKey();
         }
 
