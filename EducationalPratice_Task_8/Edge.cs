@@ -1,6 +1,6 @@
 ﻿namespace EducationalPratice_Task_8
 {
-    partial class Graph
+    public partial class Graph
     {
         /// <summary>
         /// Ребро
@@ -43,7 +43,9 @@
                 }
             }
 
-            public override string ToString() => $"{StartPeak}-{EndPeak}";
+            public bool Equals(Edge obj) => this.StartPeak == obj.StartPeak && this.EndPeak == obj.EndPeak;
+
+            public override string ToString() => $"({StartPeak})->({EndPeak})";
         }
 
     }

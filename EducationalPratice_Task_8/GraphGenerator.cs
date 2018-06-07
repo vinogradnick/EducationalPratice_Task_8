@@ -7,7 +7,7 @@ namespace EducationalPratice_Task_8
     /// <summary>
     /// Граф
     /// </summary>
-    partial class Graph
+    public partial class Graph
     {
         public static class GraphGenerator
         {
@@ -24,34 +24,33 @@ namespace EducationalPratice_Task_8
             {
 
                 List<Edge> Edgelist = new List<Edge>(edges);
-
-                if (tree)//Если генерируем граф типа дерево
-                {
-                    int status = 0;
-                    while (status<edges)
+                int status = 0;
+                if (tree) //Если генерируем граф типа дерево
+                    try
                     {
-                        for (int i = 0; i < edges; i ++)
-                        {
-                            for (int r = 0; r < _rd.Next(edges-i); r++)
+                        while (status < edges)
+                            for (int i = 0; i < edges; i++)
                             {
-                                Edgelist.Add(new Edge(i, 0));
+                                for (int r = 0; r < _rd.Next(edges - i); r++)
+                                    Edgelist.Add(new Edge(i, 0));
+                                Edgelist[i][1] = status + 1;
+                                status++;
                             }
-                            Edgelist[i][1] = status + 1;
-
-                            status++;
-                        }
-                    }                  
-                }
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                        return GenerateEdgeGraph(tree, peaks, edges);
+                    }
                 else
                     for (int i = 0; i < edges; i++)
                     {
                         int num = _rd.Next(peaks);
                         int num1 = _rd.Next(peaks);
-                        Edgelist.Add(new Edge(num,num1));
+                        Edgelist.Add(new Edge(num, num1));
                     }
-
                 foreach (Edge  edge in Edgelist)
-                    Console.WriteLine($"{edge.StartPeak}-{edge.EndPeak}");
+                    Console.WriteLine($"({edge.StartPeak})->({edge.EndPeak})");
                 return Edgelist;
             }
             /// <summary>
@@ -77,24 +76,7 @@ namespace EducationalPratice_Task_8
 
                 return matrixTree;
             }
-            public static bool[,] GenerateTree(Graph graph)
-            {
-                List<Edge>Edgelist = GenerateEdgeGraph(true,graph._peaks,graph._edges);
-
-                bool[,] matrixTree = new bool[graph._peaks,graph._edges];
-
-                
-                for (int i = 0; i < matrixTree.GetLength(0); i++)
-                for (int j = 0; j < matrixTree.GetLength(1); j++)
-                    if (Edgelist[j][0] == i || Edgelist[j][1] == i)
-                        matrixTree[i, j] = true;
-                    else
-                        matrixTree[i, j] = false;
-                
-                matrixTree.Show();
-
-                return matrixTree;
-            }
+            
             /// <summary>
             /// Генерация матрицы инцедентности для любого графа
             /// </summary>
@@ -102,7 +84,7 @@ namespace EducationalPratice_Task_8
             /// <param name="edges">ребра</param>
             /// <returns></returns>
             public static bool[,] GenerateAnyGraph(int peaks, int edges)
-            {
+            {   
                 List<Edge> Edgelist = new List<Edge>();
                 #region  FillPeaks
 
@@ -122,8 +104,13 @@ namespace EducationalPratice_Task_8
                         matrixGraph[i, j] = true;
                     else
                         matrixGraph[i, j] = false;
-                matrixGraph.Show();
-                return matrixGraph;
+                if (GraphExtension.ConvertMatrixAdjency(matrixGraph))
+                {
+                    matrixGraph.Show();
+                    return matrixGraph;
+                }
+                else
+                    return GenerateAnyGraph(matrixGraph.GetLength(0), matrixGraph.GetLength(1));
             }
             
         }
@@ -154,7 +141,85 @@ namespace EducationalPratice_Task_8
             writer.Close();
             writer.Dispose();
         }
-        
+        /// <summary>
+        /// Найти 2 вершины по столбцу матрицы инцеденции
+        /// </summary>
+        /// <param name="edgeMatrix"></param>
+        /// <returns>2 вершины</returns>
+        public static Graph.Edge FindPeak(bool[] edgeMatrix)
+        {
+            List<int> temp = new List<int>();//Временный список
+            for (int i = 0; i < edgeMatrix.Length; i++)
+                if (edgeMatrix[i])
+                    temp.Add(i);//Добавление в список
+            return new Graph.Edge(temp[0], temp[1]);//Вернуть ребро
+        }
+        public  static bool[,] ConvertMatrixAdjency(bool[,] matrix, out List<Graph.Edge> edges )
+        {
+            List<Graph.Edge> tempEdge = new List<Graph.Edge>();//Временный набор ребер графа для построения матрицы смежности
+            bool[,] ctx = new bool[matrix.GetLength(0), matrix.GetLength(0)];//Матрица смежности
+            int eg = 0;//Переменная для подсчета столбцов
+            try
+            {
+                while (matrix.GetLength(1) > eg)//Пока все столбцы матрицы инциденции не перебраны
+                {
+                    bool[] temp = new bool[matrix.GetLength(0)];//Временнный массив для заполнения вершинами
+                    for (int peaks = 0; peaks < matrix.GetLength(0); peaks++)
+                        temp[peaks] = matrix[peaks, eg];//Заполняем матрицу элементами
+                    tempEdge.Add(FindPeak(temp));//Добавляем ребро выполняя поиск 2-х вершин
+                    eg++;//Увелечение счетчика
+                }
+                for (int i = 0; i < matrix.GetLength(1); i++)
+                {
+                    ctx[tempEdge[i][0], tempEdge[i][1]] = true;
+                    ctx[tempEdge[i][1], tempEdge[i][0]] = true;
+                }
+                foreach (var edge in tempEdge)
+                    Console.WriteLine(edge.ToString());
+                edges = tempEdge;
+                Console.WriteLine("Матрица смежности:");
+                ctx.Show();//Вывод матрицы смежности и запись файл
+                return ctx;//Возращаем матрицу смежности
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Матрица инцидентности составлена неправильно \n");
+                
+            }
+            edges = null;
+            return null;
+        }
+        public static bool ConvertMatrixAdjency(bool[,] matrix)
+        {
+            List<Graph.Edge> tempEdge = new List<Graph.Edge>();//Временный набор ребер графа для построения матрицы смежности
+            bool[,] ctx = new bool[matrix.GetLength(0), matrix.GetLength(0)];//Матрица смежности
+            int eg = 0;//Переменная для подсчета столбцов
+            try
+            {
+                while (matrix.GetLength(1) > eg)//Пока все столбцы матрицы инциденции не перебраны
+                {
+                    bool[] temp = new bool[matrix.GetLength(0)];//Временнный массив для заполнения вершинами
+                    for (int peaks = 0; peaks < matrix.GetLength(0); peaks++)
+                        temp[peaks] = matrix[peaks, eg];//Заполняем матрицу элементами
+                    tempEdge.Add(FindPeak(temp));//Добавляем ребро выполняя поиск 2-х вершин
+                    eg++;//Увелечение счетчика
+                }
+                for (int i = 0; i < matrix.GetLength(1); i++)
+                {
+                    ctx[tempEdge[i][0], tempEdge[i][1]] = true;
+                    ctx[tempEdge[i][1], tempEdge[i][0]] = true;
+                }
+                foreach (var edge in tempEdge)
+                    Console.WriteLine(edge.ToString());
+               
+                return true;//Возращаем матрицу смежности
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Матрица инцидентности составлена неправильно");
+                return false;
+            }
+        }
     }
 
    

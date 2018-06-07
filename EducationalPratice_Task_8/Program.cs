@@ -14,12 +14,16 @@ namespace EducationalPratice_Task_8
         /// <param name="args"></param>
         static void Main(string[] args)
         {
-            Graph graph= new Graph(5,4);//Создание графа заданого количества вершин и 
-            bool[,] matr = graph.ConvertMatrixToGraph(Graph.GraphGenerator.GenerateTree(5, 4));
-
-           Graph.SearchDeep(ref matr);
+            while (Console.CapsLock)
+            {
+                Graph graph1 = new Graph(Graph.GraphGenerator.GenerateAnyGraph(10,9));
+                Console.WriteLine(graph1.SearchCircle());
+                graph1.Check();
+                Console.ReadKey();
+            }
+           // Graph graph= new Graph(Graph.GraphGenerator.GenerateTree(5, 4));//Создание графа заданого количества вершин и 
             // bool[,] matrix = Graph.GraphGenerator.GenerateAnyGraph(5, 4);
-            Console.ReadKey();
+            
         }
 
         
