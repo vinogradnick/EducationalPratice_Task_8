@@ -16,8 +16,7 @@ namespace EducationalPratice_Task_8
         {
             while (Console.CapsLock)
             {
-                Graph graph1 = new Graph(Graph.GraphGenerator.GenerateAnyGraph(10,9));
-                Console.WriteLine(graph1.SearchCircle());
+                Graph graph1 = new Graph(Graph.GraphGenerator.GenerateTree(10,9));
                 graph1.Check();
                 Console.ReadKey();
             }

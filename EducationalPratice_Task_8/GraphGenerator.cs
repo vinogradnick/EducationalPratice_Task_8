@@ -63,8 +63,6 @@ namespace EducationalPratice_Task_8
                 List<Edge>Edgelist = GenerateEdgeGraph(true,peaks,edges);
 
                 bool[,] matrixTree = new bool[peaks,edges];
-
-                
                 for (int i = 0; i < matrixTree.GetLength(0); i++)
                 for (int j = 0; j < matrixTree.GetLength(1); j++)
                     if (Edgelist[j][0] == i || Edgelist[j][1] == i)
@@ -106,6 +104,7 @@ namespace EducationalPratice_Task_8
                         matrixGraph[i, j] = false;
                 if (GraphExtension.ConvertMatrixAdjency(matrixGraph))
                 {
+                    Console.WriteLine("Матрица инцеденции:");
                     matrixGraph.Show();
                     return matrixGraph;
                 }
@@ -184,7 +183,6 @@ namespace EducationalPratice_Task_8
             catch (Exception)
             {
                 Console.WriteLine("Матрица инцидентности составлена неправильно \n");
-                
             }
             edges = null;
             return null;
@@ -209,9 +207,16 @@ namespace EducationalPratice_Task_8
                     ctx[tempEdge[i][0], tempEdge[i][1]] = true;
                     ctx[tempEdge[i][1], tempEdge[i][0]] = true;
                 }
-                foreach (var edge in tempEdge)
-                    Console.WriteLine(edge.ToString());
-               
+                tempEdge =new List<Graph.Edge>();
+                for (int i = 0; i < ctx.GetLength(0); i++)
+                for (int j = 0; j < ctx.GetLength(1); j++)
+                    if (ctx[i, j])
+                        tempEdge.Add(new Graph.Edge(i, j));
+
+
+                foreach (var item in tempEdge)
+                    Console.WriteLine(item.ToString());
+
                 return true;//Возращаем матрицу смежности
             }
             catch (Exception)

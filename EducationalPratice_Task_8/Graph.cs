@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace EducationalPratice_Task_8
 {
@@ -8,7 +9,7 @@ namespace EducationalPratice_Task_8
         public int Peaks { get; set; }
         public int Edges { get; set; }
         public List<Edge> Edgelist;
-
+        public bool[] bolleans;
         public bool[,] EncidenceMatrix { get; private set; }
         public bool[,] AdjacencyMatrix { get ; }
 
@@ -22,6 +23,7 @@ namespace EducationalPratice_Task_8
             Edges = matrix.GetLength(1);
             EncidenceMatrix = matrix;
             AdjacencyMatrix = GraphExtension.ConvertMatrixAdjency(matrix,out Edgelist);
+            bolleans = new bool[Peaks];
         }
         /// <summary>
         /// Проверка является ли граф деревом
@@ -29,34 +31,37 @@ namespace EducationalPratice_Task_8
         public void Check()
         {
            
-            if (Edges == Peaks - 1 && this.SearchCircle())
+            if (Edges == Peaks - 1 && SearchCircle())
                 Console.WriteLine("Граф  является деревом");
             else
                 Console.WriteLine("Граф не явлется деревом");
         }
-        /// <summary>
-        /// Поиск циклов в графе
-        /// </summary>
-        /// <returns></returns>
-        public  bool SearchCircle()
+
+        public bool SearchCircle()
         {
-            List<Edge> list = new List<Edge>();
-            List<int> used = new List<int>();//Использованные вершины
-            int counter = 0;
-            foreach (Edge egd in  Edgelist)
+            bool[,] temp = AdjacencyMatrix;
+            int peak1 = -1;
+            int peak2 = -1;
+            string[] peaks = new string[Peaks];
+            for (int i = 0; i < temp.GetLength(0); i++)
             {
-                
-                //Проверка если вершины не содержится
-                if (!used.Contains(egd.EndPeak))
-                    used.Add(egd.EndPeak);
-                else
-                    counter++;
+                for (int j = 0; j < temp.GetLength(1); j++)
+                {
+                    if (temp[i, j])
+                    {
+                        Console.Write($"({i})->({j})=>");
+                        int count = 0;
+                        while (count<Edgelist.Count)
+                        {
+                            
+                        }
+                    }
+                }
             }
-
-            return counter==0;
+            Console.WriteLine();
+           
+            return true;
         }
-
-      
 
        
     }
