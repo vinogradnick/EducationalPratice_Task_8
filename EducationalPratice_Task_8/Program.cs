@@ -14,9 +14,9 @@ namespace EducationalPratice_Task_8
         /// <param name="args"></param>
         static void Main(string[] args)
         {
-            while (Console.CapsLock)
+            while (!Console.CapsLock)
             {
-                Graph graph1 = new Graph(Graph.GraphGenerator.GenerateTree(10,9));
+                Graph graph1 = new Graph(Graph.GraphGenerator.GenerateTree(11,10));
                 graph1.Check();
                 Console.ReadKey();
             }
