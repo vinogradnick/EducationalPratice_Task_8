@@ -16,7 +16,7 @@ namespace EducationalPratice_Task_8
         {
             while (!Console.CapsLock)
             {
-                Graph graph1 = new Graph(Graph.GraphGenerator.GenerateTree(11,10));
+                Graph graph1 = new Graph(Graph.GraphGenerator.GenerateAnyGraph(50,49));
                 graph1.Check();
                 Console.ReadKey();
             }

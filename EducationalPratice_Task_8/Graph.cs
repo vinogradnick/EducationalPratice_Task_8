@@ -42,15 +42,12 @@ namespace EducationalPratice_Task_8
         {
             cycles =new List<int[]>();
             bool status = false;
-            for (int i = 0; i < Edgelist.Count; i++)
+            foreach (var edge in Edgelist)
             {
-                for (int j = 0; j < 2; j++)
-                {
-                    findNewCycles(new int[]{Edgelist[i][j]});
-                }
-            }
-            
-          
+                SearchRepeats(new int[]{edge.StartPeak});
+                SearchRepeats(new int[]{edge.EndPeak});
+            }     
+                        Console.WriteLine("dfs");
                 foreach (int[] cy in cycles)
                 {
                     string s = "" + cy[0];
@@ -69,39 +66,44 @@ namespace EducationalPratice_Task_8
         /// <summary>
         /// Поиск новых циклов
         /// </summary>
-        /// <param name="path">Ребро графа</param>
-        static void findNewCycles(int[] path)
+        /// <param name="route">Ребро графа</param>
+        static void SearchRepeats(int[] route)
         {
-            int n = path[0];//Присвоение стартовой вершины
-            int x;//Временная переменная
-            int[] sub = new int[path.Length + 1];//Следующее ребро
+            int startPeak = route[0];//Присвоение стартовой вершины
+            int endPeak;//Временная переменная
+            int[] temp = new int[route.Length + 1];//Следующее ребро
             //Цикл по не перебраны все ребра в графе
-            for (int i = 0; i < Edgelist.Count; i++)
-                for (int y = 0; y <= 1; y++)
-
-                    if (Edgelist[i][y] == n)//Если стартовая вершина ребра графа = вершине ребра графа
-                                         //с которого выполняется обход
-                                         //  edge referes to our current node
+            foreach (var edge in Edgelist)
+                for (int vertex = 0; vertex < 2; vertex++)
+                    if (edge[vertex] == startPeak) //Если стартовая вершина ребра графа = вершине ребра графа
+                        //с которого выполняется обход
                     {
                         //Получаем конечную вершину ребра графа
-                        x = Edgelist[i][(y + 1) % 2];
-                        if (!visited(x, path))//Если вершина не посещена в пути
+                        endPeak = edge[(vertex + 1) % 2]; // y + 1 % 2 для получения конечной вершины по данному индексу
+                        if (!visited(endPeak, route)) //Если вершина не посещена в пути
                         {
-                            sub[0] = x;//добавляем вершину в ребро
-                            Array.Copy(path, 0, sub, 1, path.Length);//Копируем верину в следующее ребро
-                            findNewCycles(sub);//ищем новый путь
+                            temp[0] = endPeak; //добавляем вершину в ребро
+                            Array.Copy(route, 0, temp, 1, route.Length); //Копируем верину в следующее ребро
+                            SearchRepeats(temp); //ищем новый путь
                         }
-                        else if ((path.Length > 2) && (x == path[path.Length - 1]))//Проверка если длина пути > 2 тогда есть есть цикл и
-                                                                                   //(вершина = последней вершине в пути)
+                        else if ((route.Length > 2) && (endPeak == route[route.Length - 1])) 
+                            //Проверка если длина пути > 2 тогда есть есть цикл и
+                            //(вершина = последней вершине в пути)
                         {
-                            int[] p = normalize(path);//поворот пути чтобы начался с самый маленькой вершины
-                            int[] inv = invert(p);//Инвертирование пути
-                            if (isNew(p) && isNew(inv))//Если путь новый и другой путь новый
-                                cycles.Add(p);//Добавляем путь  в цикл
+                            int[] p = normalize(route); //поворот пути чтобы начался с самый маленькой вершины
+                            int[] inv = invert(p); //Инвертирование пути
+                            if (isNew(p) && isNew(inv)) //Если путь новый и другой путь новый
+                                cycles.Add(p); //Добавляем путь  в цикл
                         }
                     }
         }
-        //проверка двух ребер
+
+        /// <summary>
+        /// Проверка двух ребер
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         static bool equals(int[] a, int[] b)
         {
             bool ret = (a[0] == b[0]) && (a.Length == b.Length);
@@ -115,54 +117,48 @@ namespace EducationalPratice_Task_8
             return ret;
         }
         //Инвертирование графа в пути
-        static int[] invert(int[] path)
+        static int[] invert(int[] route)
         {
-            int[] p = new int[path.Length];
+            int[] p = new int[route.Length];
 
-            for (int i = 0; i < path.Length; i++)
-                p[i] = path[path.Length - 1 - i];
+            for (int i = 0; i < route.Length; i++)
+                p[i] = route[route.Length - 1 - i];
 
             return normalize(p);
         }
 
         //  повернуть путь цикла чтобы он начинался с самый маленькой вершниы
-        static int[] normalize(int[] path)
+        static int[] normalize(int[] route)
         {
-            int[] p = new int[path.Length];//путь 
-            int x = smallest(path);//Минимальная вершина в пути
-            int n;//вершина
+            int[] p = new int[route.Length];//путь 
+            int x = smallest(route);//Минимальная вершина в пути
 
-            Array.Copy(path, 0, p, 0, path.Length);//копирование из 1 вершины в другую на размер
+            Array.Copy(route, 0, p, 0, route.Length);//копирование из 1 вершины в другую на размер
 
             while (p[0] != x)//Пока первая вершина в пути не = минимальной вершине в пути
             {
-                n = p[0];//Минимальная вершина в пути
+                var peak = p[0];//вершина
                 Array.Copy(p, 1, p, 0, p.Length - 1);//Копирование 
-                p[p.Length - 1] = n;
+                p[p.Length - 1] = peak;
             }
 
             return p;
         }
         //Если путь новый
-        static bool isNew(int[] path)
+        static bool isNew(int[] route)
         {
-            bool ret = true;
-
             foreach (int[] p in cycles)
-                if (equals(p, path))
-                {
-                    ret = false;
-                    break;
-                }
+                if (equals(p, route))
+                    return false;
 
-            return ret;
+            return true;
         }
         //Поиск минимальной вершниы
-        static int smallest(int[] path)
+        static int smallest(int[] route)
         {
-            int min = path[0];//первая вершина
+            int min = route[0];//первая вершина
 
-            foreach (int p in path)
+            foreach (int p in route)
                 if (p < min)
                     min = p;//Происвоение минимального
 
@@ -172,20 +168,18 @@ namespace EducationalPratice_Task_8
         /// Проверка посещения вершниы графа
         /// </summary>
         /// <param name="n"></param>
-        /// <param name="path"></param>
+        /// <param name="route"></param>
         /// <returns></returns>
-        static bool visited(int n, int[] path)
+        static bool visited(int peak, int[] route)
         {
-            bool ret = false;
 
-            foreach (int p in path)//Перебираем путь
-                if (p == n)//Если вершина есть в пути
+            foreach (int p in route)//Перебираем путь
+                if (p == peak)//Если вершина есть в пути
                 {
-                    ret = true;
-                    break;
+                    return true;
                 }
 
-            return ret;
+            return false;
         }
     }
 
