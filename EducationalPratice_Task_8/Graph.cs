@@ -86,13 +86,13 @@ namespace EducationalPratice_Task_8
                             Array.Copy(route, 0, temp, 1, route.Length); //Копируем верину в следующее ребро
                             SearchRepeats(temp); //ищем новый путь
                         }
-                        else if ((route.Length > 2) && (endPeak == route[route.Length - 1])) 
-                            //Проверка если длина пути > 2 тогда есть есть цикл и
-                            //(вершина = последней вершине в пути)
+                        else
                         {
                             int[] p = normalize(route); //поворот пути чтобы начался с самый маленькой вершины
-                            int[] inv = invert(p); //Инвертирование пути
-                            if (isNew(p) && isNew(inv)) //Если путь новый и другой путь новый
+                            if ((route.Length > 2) && (endPeak == route[route.Length - 1]) && isNew(p) &&
+                                isNew(invert(p)))
+                                //Проверка если длина пути > 2 тогда есть есть цикл и
+                                //(вершина = последней вершине в пути)
                                 cycles.Add(p); //Добавляем путь  в цикл
                         }
                     }
@@ -110,9 +110,7 @@ namespace EducationalPratice_Task_8
 
             for (int i = 1; ret && (i < a.Length); i++)
                 if (a[i] != b[i])
-                {
-                    ret = false;
-                }
+                    return false;
 
             return ret;
         }
@@ -174,11 +172,9 @@ namespace EducationalPratice_Task_8
         {
 
             foreach (int p in route)//Перебираем путь
-                if (p == peak)//Если вершина есть в пути
-                {
-                    return true;
-                }
+                if (p == peak) //Если вершина есть в пути
 
+                    return true;
             return false;
         }
     }
