@@ -66,12 +66,12 @@ namespace EducationalPratice_Task_8
         /// <summary>
         /// Поиск новых циклов
         /// </summary>
-        /// <param name="route">Ребро графа</param>
+        /// <param name="route">Вершину ребра</param>
         static void SearchRepeats(int[] route)
         {
             int startPeak = route[0];//Присвоение стартовой вершины
             int endPeak;//Временная переменная
-            int[] temp = new int[route.Length + 1];//Следующее ребро
+            int[] temp = new int[route.Length + 1];//резервируем мето для пути 
             //Цикл по не перебраны все ребра в графе
             foreach (var edge in Edgelist)
                 for (int vertex = 0; vertex < 2; vertex++)
@@ -80,7 +80,7 @@ namespace EducationalPratice_Task_8
                     {
                         //Получаем конечную вершину ребра графа
                         endPeak = edge[(vertex + 1) % 2]; // y + 1 % 2 для получения конечной вершины по данному индексу
-                        if (!visited(endPeak, route)) //Если вершина не посещена в пути
+                        if (!IsPeakVisited(endPeak, route)) //Если вершина не посещена в пути
                         {
                             temp[0] = endPeak; //добавляем вершину в ребро
                             Array.Copy(route, 0, temp, 1, route.Length); //Копируем верину в следующее ребро
@@ -88,9 +88,9 @@ namespace EducationalPratice_Task_8
                         }
                         else
                         {
-                            int[] p = normalize(route); //поворот пути чтобы начался с самый маленькой вершины
-                            if ((route.Length > 2) && (endPeak == route[route.Length - 1]) && isNew(p) &&
-                                isNew(invert(p)))
+                            int[] p = Rotate(route); //поворот пути чтобы начался с самый маленькой вершины
+                            if ((route.Length > 2) && (endPeak == route[route.Length - 1]) && IsFindNewRoute(p) &&
+                                IsFindNewRoute(Invert(p)))
                                 //Проверка если длина пути > 2 тогда есть есть цикл и
                                 //(вершина = последней вершине в пути)
                                 cycles.Add(p); //Добавляем путь  в цикл
@@ -99,7 +99,7 @@ namespace EducationalPratice_Task_8
         }
 
         /// <summary>
-        /// Проверка двух ребер
+        /// Проверка двух путей в графе
         /// </summary>
         /// <param name="a"></param>
         /// <param name="b"></param>
@@ -114,22 +114,26 @@ namespace EducationalPratice_Task_8
 
             return ret;
         }
-        //Инвертирование графа в пути
-        static int[] invert(int[] route)
+        /// <summary>
+        /// Инвертирование пути 
+        /// </summary>
+        /// <param name="route"></param>
+        /// <returns></returns>
+        static int[] Invert(int[] route)
         {
             int[] p = new int[route.Length];
 
             for (int i = 0; i < route.Length; i++)
                 p[i] = route[route.Length - 1 - i];
 
-            return normalize(p);
+            return Rotate(p);
         }
 
         //  повернуть путь цикла чтобы он начинался с самый маленькой вершниы
-        static int[] normalize(int[] route)
+        static int[] Rotate(int[] route)
         {
             int[] p = new int[route.Length];//путь 
-            int x = smallest(route);//Минимальная вершина в пути
+            int x = Smallest(route);//Минимальная вершина в пути
 
             Array.Copy(route, 0, p, 0, route.Length);//копирование из 1 вершины в другую на размер
 
@@ -143,7 +147,7 @@ namespace EducationalPratice_Task_8
             return p;
         }
         //Если путь новый
-        static bool isNew(int[] route)
+        static bool IsFindNewRoute(int[] route)
         {
             foreach (int[] p in cycles)
                 if (equals(p, route))
@@ -152,7 +156,7 @@ namespace EducationalPratice_Task_8
             return true;
         }
         //Поиск минимальной вершниы
-        static int smallest(int[] route)
+        static int Smallest(int[] route)
         {
             int min = route[0];//первая вершина
 
@@ -168,7 +172,7 @@ namespace EducationalPratice_Task_8
         /// <param name="n"></param>
         /// <param name="route"></param>
         /// <returns></returns>
-        static bool visited(int peak, int[] route)
+        static bool IsPeakVisited(int peak, int[] route)
         {
 
             foreach (int p in route)//Перебираем путь
